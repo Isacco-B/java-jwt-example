@@ -1,0 +1,72 @@
+package com.isaccobertoli;
+
+import static io.javalin.apibuilder.ApiBuilder.*;
+
+import java.util.Objects;
+
+import com.isaccobertoli.controllers.AuthController;
+import com.isaccobertoli.controllers.UserController;
+import com.isaccobertoli.database.MongoConnection;
+import com.isaccobertoli.repository.AuthRepository;
+import com.isaccobertoli.repository.UserRepository;
+import com.isaccobertoli.routes.AuthRoutes;
+import com.isaccobertoli.routes.UserRoutes;
+import com.isaccobertoli.services.AuthService;
+import com.isaccobertoli.services.UserService;
+import com.isaccobertoli.utils.EnvUtil;
+import com.isaccobertoli.utils.ExceptionHandlersUtil;
+import com.mongodb.client.MongoDatabase;
+
+import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
+
+public class Main {
+    public static void main(String[] args) {
+        int serverPort = Objects.requireNonNullElse(Integer.parseInt(EnvUtil.getEnv("SERVER_PORT")), 7000);
+
+        System.out.println("Checking database connection...");
+        if (!MongoConnection.testConnection()) {
+            System.err.println("Failed to connect to the database. Server will not start.");
+            System.exit(1);
+        }
+        System.out.println("Database connection successful!");
+
+        MongoDatabase database = MongoConnection.getDatabase();
+
+        UserRepository userRepository = new UserRepository(database);
+        AuthRepository authRepository = new AuthRepository(database);
+
+        UserService userService = new UserService(userRepository);
+        AuthService authService = new AuthService(authRepository, userRepository);
+
+        UserController userController = new UserController(userService);
+        AuthController authController = new AuthController(authService);
+
+        Javalin app = Javalin.create(config -> {
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.directory = "/public";
+                staticFiles.location = Location.CLASSPATH;
+            });
+
+            config.router.apiBuilder(() -> {
+                path("/api", () -> {
+                    UserRoutes.configure(userController);
+                    AuthRoutes.configure(authController);
+                });
+            });
+
+            config.jetty.modifyServer(server -> server.setStopTimeout(5_000));
+        });
+
+        ExceptionHandlersUtil.register(app);
+
+        app.start(serverPort);
+
+        System.out.println("Server started at localhost" + ":" + serverPort);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down the server...");
+            MongoConnection.closeConnection();
+        }));
+    }
+}
