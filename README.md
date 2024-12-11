@@ -1,11 +1,10 @@
-# java-notes-api
+# java-jwt-example
 
-- Java Notes is a RESTful application designed to create, manage, and secure personal notes. The project leverages modern technologies such as Java, Javalin, and MongoDB, implementing JWT-based authentication and advanced security features like account verification and password reset via email.
+- Java Jwt Example, the project leverages modern technologies such as Java, Javalin, and MongoDB, implementing JWT-based authentication and advanced security features like account verification and password reset via email.
 
 
 ## Features
 
-- CRUD operations for notes.
 - Implements JWT-based authentication and authorization.
 - Implements request validation and middleware.
 - Account verification.
@@ -27,22 +26,6 @@
 - **MongoDB**: You need to have a running MongoDB instance to connect to.
 
 
-## Demo
-
-- You can use https://demo16.isaccobertoli.com/api as base_url to interact with the API.
-- You can use https://github.com/Isacco-B/java-notes/tree/main/client as client to interact with the API.
-
-
-## Images
-
-<div style="display: flex; flex-direction: column; justify-content: space-between; gap: 10px; margin-bottom: 10px">
-    <img src="../gitHub/imgs/reset_password_email.png">
-    <img src="../gitHub/imgs/reset_password_form.png">
-    <img src="../gitHub/imgs/verify_account_email.png">
-    <img src="../gitHub/imgs/verify_success.png">
-</div>
-
-
 ### API Endpoints
 
 ## Auth
@@ -51,15 +34,6 @@
 | POST | /api/auth/sign-up | Send email to verify account | email: string, password: string, confirmPassword: string |
 | POST | /api/auth/sign-in | Returns JWT token | email: string, password: string |
 | POST | /api/auth/reset-password/{email} | Send email to reset password | email: string |
-
-## Notes | Requires Authorization Header with Bearer Token
-| Method | Endpoint | Description | Parameters |
-| --- | --- | --- | --- |
-| GET | /api/notes | Returns all notes for the authenticated user. |
-| GET | /api/notes/{noteId} | Returns a specific note for the authenticated user. | noteId: string |
-| POST | /api/notes | Creates a new note for the authenticated user. | title: string, content: string |
-| PUT | /api/courses/{noteId} | Updates a note for the authenticated user. |  title: string, content: string |
-| DELETE | /api/courses/{noteId} | Deletes a note for the authenticated user. | noteId: string |
 
 ## User | Requires Authorization Header with Bearer Token
 | Method | Endpoint | Description | Parameters |
@@ -73,13 +47,7 @@
 - Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/Isacco-B/java-notes.git
-```
-
-- Move to the server directory
-
-```bash
-cd server
+git clone https://github.com/Isacco-B/java-jwt-example.git
 ```
 
 Rename the ./src/main/resources/.env.example file to ./src/main/resources/.env and update the values.
@@ -112,7 +80,7 @@ mvn clean package
 cd target
 ```
 ```bash
-java -jar notes-server.jar
+java -jar java-jwt-example.jar
 ```
 
 ## 🔗 Links
